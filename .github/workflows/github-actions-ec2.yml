@@ -9,7 +9,7 @@ on:
 jobs:
   deploy:
     name: Deploy to EC2 on master branch push
-    runs-on:  Amazon Linux-latest
+    runs-on: Linux-latest
 
     steps:
       - name: Checkout the files
@@ -26,7 +26,13 @@ jobs:
         id: deploy
         run: |
           aws deploy create-deployment \
-            --application-name GIT-CICD-PIPELINE \
-            --deployment-group-name CICD_deployment_group \
-            --deployment-config-name CodeDeployDefault.OneAtATime \
+            --application-name "GIT-CICD-PIPELINE" \
+            --deployment-group-name "CICD_deployment_group" \
+            --deployment-config-name "CodeDeployDefault.OneAtATime" \
             --github-location repository=${{ github.repository }},commitId=${{ github.sha }}
+          if [ $? -eq 0 ]; then
+            echo "Deployment created successfully."
+          else
+            echo "Failed to create deployment." >&2
+            exit 1
+          fi
